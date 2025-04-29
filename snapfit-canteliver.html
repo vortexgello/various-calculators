@@ -110,12 +110,18 @@ function calculateCantilever() {
   const b = parseFloat(document.getElementById('b').value);
   const alpha = parseFloat(document.getElementById('alpha').value) * Math.PI / 180;
   const alpha_return = parseFloat(document.getElementById('alpha_return').value) * Math.PI / 180;
+
   const Q = 2.07;
   const Ymax = (epsilon0 * Math.pow(L, 2) * Q) / (1.5 * t);
   const P = (b * Math.pow(t, 2) * E * epsilon0) / (6 * L);
   const W = (P * (mu + Math.tan(alpha))) / (1 - mu * Math.tan(alpha_return));
-  document.getElementById('cantilever_result').innerText = `Ymax = ${Ymax.toFixed(2)} mm, W = ${W.toFixed(2)} N`;
+
+  document.getElementById('cantilever_result').innerText = 
+    `Maximum Allowable Deflection (Ymax): ${Ymax.toFixed(2)} mm\n` +
+    `Insertion Force (P): ${P.toFixed(2)} N\n` +
+    `Mating Force (W): ${W.toFixed(2)} N`;
 }
+
 
 function calcLSlotLength() {
   const Y = parseFloat(document.getElementById('LY').value);
