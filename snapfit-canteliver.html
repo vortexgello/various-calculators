@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snap-Fit Calculator</title>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 20px; background: #f9f9f9; color: #333; }
+    input, button, select { margin: 5px; padding: 10px; width: 250px; border: 1px solid #ccc; border-radius: 5px; }
+    button { background-color: #007BFF; color: white; border: none; cursor: pointer; }
+    button:hover { background-color: #0056b3; }
+    .output { margin-top: 20px; padding: 10px; background: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    img { display: block; margin: 20px auto; max-width: 100%; height: auto; border-radius: 10px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Snap-Fit Design Calculator</h1>
+
+    <h3>Input Parameters</h3>
+    <label>Material:
+      <select id="material" onchange="prefillValues()">
+        <option value="">Select Material</option>
+        <option value="PEEK">PEEK</option>
+        <option value="PEI">PEI</option>
+        <option value="PC">PC</option>
+        <option value="Acetal">Acetal</option>
+        <option value="Nylon6">Nylon 6</option>
+        <option value="PBT">PBT</option>
+        <option value="PC/PET">PC/PET</option>
+        <option value="ABS">ABS</option>
+        <option value="PET">PET</option>
+      </select>
+    </label><br>
+
+    <label>Flexural Modulus (E, MPa): <input id="E" type="number"></label><br>
+    <label>Allowable Strain (ε₀, decimal): <input id="epsilon0" type="number" step="any"></label><br>
+    <label>Coefficient of Friction (μ): <input id="mu" type="number" step="any"></label><br>
+    <label>Beam Thickness (t, mm): <input id="t" type="number"></label><br>
+    <label>Beam Length (L, mm): <input id="L" type="number"></label><br>
+    <label>Beam Width (b, mm): <input id="b" type="number"></label><br>
+    <label>Lead Angle (α, degrees): <input id="alpha" type="number"></label><br>
+    <label>Return Angle (α', degrees): <input id="alpha_return" type="number"></label><br>
+
+    <button onclick="calculate()">Calculate</button>
+
+    <div class="output">
+      <h3>Results</h3>
+      <p id="deflection"></p>
+      <p id="mating_force"></p>
+    </div>
+
+    <img src="/flexture/page1.png" alt="Snap Fit Example Image">
+    <img src="/flexture/page1.png" alt="Snap Fit Example Image">
+  </div>
+
+<script>
+function prefillValues() {
+  const material = document.getElementById('material').value;
+
+  const properties = {
+    "PEEK": { E: 4100, epsilon0: 0.098, mu: 0.22 },
+    "PEI": { E: 3300, epsilon0: 0.098, mu: 0.225 },
+    "PC": { E: 2300, epsilon0: 0.092, mu: 0.325 },
+    "Acetal": { E: 2800, epsilon0: 0.07, mu: 0.275 },
+    "Nylon6": { E: 1700, epsilon0: 0.08, mu: 0.285 },
+    "PBT": { E: 2400, epsilon0: 0.088, mu: 0.4 },
+    "PC/PET": { E: 2500, epsilon0: 0.058, mu: 0.45 },
+    "ABS": { E: 2200, epsilon0: 0.065, mu: 0.55 },
+    "PET": { E: 2000, epsilon0: 0.015, mu: 0.215 }
+  };
+
+  if (properties[material]) {
+    document.getElementById('E').value = properties[material].E;
+    document.getElementById('epsilon0').value = properties[material].epsilon0;
+    document.getElementById('mu').value = properties[material].mu;
+  }
+}
+
+function calculate() {
+  const E = parseFloat(document.getElementById('E').value);
+  const epsilon0 = parseFloat(document.getElementById('epsilon0').value);
+  const mu = parseFloat(document.getElementById('mu').value);
+  const t = parseFloat(document.getElementById('t').value);
+  const L = parseFloat(document.getElementById('L').value);
+  const b = parseFloat(document.getElementById('b').value);
+  const alpha = parseFloat(document.getElementById('alpha').value) * Math.PI / 180;
+  const alpha_return = parseFloat(document.getElementById('alpha_return').value) * Math.PI / 180;
+
+  const Q = 2.07;
+  const Ymax = (epsilon0 * Math.pow(L,2) * Q) / (1.5 * t);
+
+  const P = (b * Math.pow(t,2) * E * epsilon0) / (6 * L);
+  const W = (P * (mu + Math.tan(alpha))) / (1 - mu * Math.tan(alpha_return));
+
+  document.getElementById('deflection').innerText = `Maximum Allowable Deflection (Ymax): ${Ymax.toFixed(2)} mm`;
+  document.getElementById('mating_force').innerText = `Mating Force (W): ${W.toFixed(2)} N`;
+}
+</script>
+
+</body>
+</html>
