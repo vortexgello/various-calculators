@@ -3,63 +3,85 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Snap-Fit Calculator</title>
+  <title>Snap-Fit Calculator (MMKS)</title>
   <style>
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 20px; background: #f9f9f9; color: #333; }
     input, button, select { margin: 5px; padding: 10px; width: 250px; border: 1px solid #ccc; border-radius: 5px; }
     button { background-color: #007BFF; color: white; border: none; cursor: pointer; }
     button:hover { background-color: #0056b3; }
     .output { margin-top: 20px; padding: 10px; background: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    .container { max-width: 700px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
     img { display: block; margin: 20px auto; max-width: 100%; height: auto; border-radius: 10px; }
+    h3 { margin-top: 40px; }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Snap-Fit Design Calculator</h1>
+    <h1>Snap-Fit Design Calculator (MMKS)</h1>
 
-    <h3>Input Parameters</h3>
-    <label>Material:
-      <select id="material" onchange="prefillValues()">
-        <option value="">Select Material</option>
-        <option value="PEEK">PEEK</option>
-        <option value="PEI">PEI</option>
-        <option value="PC">PC</option>
-        <option value="Acetal">Acetal</option>
-        <option value="Nylon6">Nylon 6</option>
-        <option value="PBT">PBT</option>
-        <option value="PC/PET">PC/PET</option>
-        <option value="ABS">ABS</option>
-        <option value="PET">PET</option>
+    <h3>Material Selection</h3>
+    <select id="material" onchange="prefillMaterial()">
+      <option value="">Select Material</option>
+      <option value="PEEK">PEEK</option>
+      <option value="PEI">PEI</option>
+      <option value="PC">PC</option>
+      <option value="Acetal">Acetal</option>
+      <option value="Nylon6">Nylon 6</option>
+      <option value="PBT">PBT</option>
+      <option value="ABS">ABS</option>
+    </select>
+
+    <h3>Type 1: Cantilever Snap-Fit</h3>
+    <label>Flexural Modulus E (MPa): <input id="E" type="number"></label><br>
+    <label>Allowable Strain ε₀: <input id="epsilon0" type="number" step="any"></label><br>
+    <label>Friction Coefficient μ: <input id="mu" type="number" step="any"></label><br>
+    <label>Thickness t (mm): <input id="t" type="number"></label><br>
+    <label>Length L (mm): <input id="L" type="number"></label><br>
+    <label>Width b (mm): <input id="b" type="number"></label><br>
+    <label>Lead Angle α (deg): <input id="alpha" type="number"></label><br>
+    <label>Return Angle α' (deg): <input id="alpha_return" type="number"></label><br>
+    <button onclick="calculateCantilever()">Calculate Cantilever</button>
+    <p id="cantilever_result"></p>
+
+    <h3>Type 2: L-Shaped Snap-Fit</h3>
+    <label>Deflection Y (mm): <input id="LY" type="number"></label><br>
+    <label>Strain ε₀: <input id="Leps" type="number" step="any"></label><br>
+    <label>Modulus E (MPa): <input id="LE" type="number"></label><br>
+    <label>Moment of Inertia I (mm⁴): <input id="LI" type="number" step="any"></label><br>
+    <label>L₁ (mm): <input id="L1" type="number"></label><br>
+    <label>Radius R (mm): <input id="LR" type="number"></label><br>
+    <button onclick="calcLSlotLength()">Calculate L-Slot Length</button>
+    <button onclick="calcLForce()">Calculate L-Force</button>
+    <p id="l_result"></p>
+
+    <h3>Type 3: U-Shaped Snap-Fit</h3>
+    <label>Select Case:
+      <select id="ucase">
+        <option value="1">U-Shape Case 1</option>
+        <option value="2">U-Shape Case 2</option>
       </select>
     </label><br>
+    <label>Force P (N): <input id="UP" type="number"></label><br>
+    <label>Modulus E (MPa): <input id="UE" type="number"></label><br>
+    <label>Moment of Inertia I (mm⁴): <input id="UI" type="number"></label><br>
+    <label>L₁ (mm): <input id="UL1" type="number"></label><br>
+    <label>L₂ (mm): <input id="UL2" type="number"></label><br>
+    <label>Radius R (mm): <input id="UR" type="number"></label><br>
+    <button onclick="calcUDeflection()">Calculate U-Shape Deflection</button>
+    <p id="u_result"></p>
 
-    <label>Flexural Modulus (E, MPa): <input id="E" type="number"></label><br>
-    <label>Allowable Strain (ε₀, decimal): <input id="epsilon0" type="number" step="any"></label><br>
-    <label>Coefficient of Friction (μ): <input id="mu" type="number" step="any"></label><br>
-    <label>Beam Thickness (t, mm): <input id="t" type="number"></label><br>
-    <label>Beam Length (L, mm): <input id="L" type="number"></label><br>
-    <label>Beam Width (b, mm): <input id="b" type="number"></label><br>
-    <label>Lead Angle (α, degrees): <input id="alpha" type="number"></label><br>
-    <label>Return Angle (α', degrees): <input id="alpha_return" type="number"></label><br>
-
-    <button onclick="calculate()">Calculate</button>
+    <button onclick="window.print()">Print Page</button>
     <button onclick="saveResults()">Save Results</button>
-    <button onclick="window.location.href='index.html'">Back to Home</button>
 
-    <div class="output">
-      <h3>Results</h3>
-      <p id="deflection"></p>
-      <p id="mating_force"></p>
-    </div>
     <img src="./flexture/page1.png" alt="Snap Fit Example Image">
     <img src="./flexture/page2.png" alt="Snap Fit Example Image">
+    <img src="./flexture/L-page2.png " alt="L Snap Fit Diagram">
+    <img src="./flexture/U-page1.png" alt="U Snap Fit Diagram">
   </div>
 
 <script>
-function prefillValues() {
+function prefillMaterial() {
   const material = document.getElementById('material').value;
-
   const properties = {
     "PEEK": { E: 4100, epsilon0: 0.098, mu: 0.22 },
     "PEI": { E: 3300, epsilon0: 0.098, mu: 0.225 },
@@ -67,19 +89,19 @@ function prefillValues() {
     "Acetal": { E: 2800, epsilon0: 0.07, mu: 0.275 },
     "Nylon6": { E: 1700, epsilon0: 0.08, mu: 0.285 },
     "PBT": { E: 2400, epsilon0: 0.088, mu: 0.4 },
-    "PC/PET": { E: 2500, epsilon0: 0.058, mu: 0.45 },
-    "ABS": { E: 2200, epsilon0: 0.065, mu: 0.55 },
-    "PET": { E: 2000, epsilon0: 0.015, mu: 0.215 }
+    "ABS": { E: 2200, epsilon0: 0.065, mu: 0.55 }
   };
-
   if (properties[material]) {
     document.getElementById('E').value = properties[material].E;
+    document.getElementById('LE').value = properties[material].E;
+    document.getElementById('UE').value = properties[material].E;
     document.getElementById('epsilon0').value = properties[material].epsilon0;
+    document.getElementById('Leps').value = properties[material].epsilon0;
     document.getElementById('mu').value = properties[material].mu;
   }
 }
 
-function calculate() {
+function calculateCantilever() {
   const E = parseFloat(document.getElementById('E').value);
   const epsilon0 = parseFloat(document.getElementById('epsilon0').value);
   const mu = parseFloat(document.getElementById('mu').value);
@@ -88,57 +110,86 @@ function calculate() {
   const b = parseFloat(document.getElementById('b').value);
   const alpha = parseFloat(document.getElementById('alpha').value) * Math.PI / 180;
   const alpha_return = parseFloat(document.getElementById('alpha_return').value) * Math.PI / 180;
-
   const Q = 2.07;
-  const Ymax = (epsilon0 * Math.pow(L,2) * Q) / (1.5 * t);
-
-  const P = (b * Math.pow(t,2) * E * epsilon0) / (6 * L);
+  const Ymax = (epsilon0 * Math.pow(L, 2) * Q) / (1.5 * t);
+  const P = (b * Math.pow(t, 2) * E * epsilon0) / (6 * L);
   const W = (P * (mu + Math.tan(alpha))) / (1 - mu * Math.tan(alpha_return));
-
-  document.getElementById('deflection').innerText = `Maximum Allowable Deflection (Ymax): ${Ymax.toFixed(2)} mm`;
-  document.getElementById('mating_force').innerText = `Mating Force (W): ${W.toFixed(2)} N`;
+  document.getElementById('cantilever_result').innerText = `Ymax = ${Ymax.toFixed(2)} mm, W = ${W.toFixed(2)} N`;
 }
-</script>
 
-<script>
+function calcLSlotLength() {
+  const Y = parseFloat(document.getElementById('LY').value);
+  const eps = parseFloat(document.getElementById('Leps').value);
+  const E = parseFloat(document.getElementById('LE').value);
+  const R = parseFloat(document.getElementById('LR').value);
+  const L1 = parseFloat(document.getElementById('L1').value);
+  const L2 = (6 / (E * eps)) * Y * (4 * Math.PI * L1 * R + 8 * L1 * R + 12 * L1 * (L1 + R)) / (12 * Math.pow((L1 + R), 2));
+  document.getElementById('l_result').innerText = `Required L₂: ${L2.toFixed(2)} mm`;
+}
+
+function calcLForce() {
+  const Y = parseFloat(document.getElementById('LY').value);
+  const E = parseFloat(document.getElementById('LE').value);
+  const I = parseFloat(document.getElementById('LI').value);
+  const L1 = parseFloat(document.getElementById('L1').value);
+  const R = parseFloat(document.getElementById('LR').value);
+  const num = 4 * Math.PI * L1 * R + 8 * L1 * R + 12 * L1 * (L1 + R);
+  const den = 12 * Math.pow((L1 + R), 2);
+  const P = (12 * E * I * Y) / (num / den);
+  document.getElementById('l_result').innerText = `Required P: ${P.toFixed(2)} N`;
+}
+
+function calcUDeflection() {
+  const P = parseFloat(document.getElementById('UP').value);
+  const E = parseFloat(document.getElementById('UE').value);
+  const I = parseFloat(document.getElementById('UI').value);
+  const L1 = parseFloat(document.getElementById('UL1').value);
+  const L2 = parseFloat(document.getElementById('UL2').value);
+  const R = parseFloat(document.getElementById('UR').value);
+  const caseType = document.getElementById('ucase').value;
+  let Y;
+  if (caseType === "1") {
+    Y = (P / (18 * E * I)) * (6 * L1 * L1 + 9 * R * (2 * Math.PI * L1 + 8 * R) + 6 * L2 * (3 * L1 * L1 - 3 * L1 * L2 + L2 * L2));
+  } else {
+    Y = (P / (6 * E * I)) * (4 * L1 * L1 + 2 * L1 + 3 * R * (2 * Math.PI * L1 + 8 * R));
+  }
+  document.getElementById('u_result').innerText = `Deflection Y: ${Y.toFixed(2)} mm`;
+}
+
 function saveResults() {
-    const deflection = document.getElementById('deflection').innerText;
-    const matingForce = document.getElementById('mating_force').innerText;
+  const results = `Snap-Fit Input Parameters:\n\n` +
+    `Material: ${document.getElementById('material').value}\n` +
+    `Flexural Modulus E (MPa): ${document.getElementById('E').value}\n` +
+    `Allowable Strain ε₀: ${document.getElementById('epsilon0').value}\n` +
+    `Friction Coefficient μ: ${document.getElementById('mu').value}\n` +
+    `Thickness t (mm): ${document.getElementById('t').value}\n` +
+    `Length L (mm): ${document.getElementById('L').value}\n` +
+    `Width b (mm): ${document.getElementById('b').value}\n` +
+    `Lead Angle α (deg): ${document.getElementById('alpha').value}\n` +
+    `Return Angle α' (deg): ${document.getElementById('alpha_return').value}\n` +
+    `\nCantilever Result: ${document.getElementById('cantilever_result').innerText}\n\n` +
+    `L-Slot Input Parameters:\n` +
+    `Deflection Y (mm): ${document.getElementById('LY').value}\n` +
+    `Moment of Inertia I (mm⁴): ${document.getElementById('LI').value}\n` +
+    `L₁ (mm): ${document.getElementById('L1').value}\n` +
+    `Radius R (mm): ${document.getElementById('LR').value}\n` +
+    `\nL-Slot Result: ${document.getElementById('l_result').innerText}\n\n` +
+    `U-Shape Input Parameters:\n` +
+    `Case: ${document.getElementById('ucase').value}\n` +
+    `Force P (N): ${document.getElementById('UP').value}\n` +
+    `Moment of Inertia I (mm⁴): ${document.getElementById('UI').value}\n` +
+    `L₁ (mm): ${document.getElementById('UL1').value}\n` +
+    `L₂ (mm): ${document.getElementById('UL2').value}\n` +
+    `Radius R (mm): ${document.getElementById('UR').value}\n` +
+    `\nU-Shape Result: ${document.getElementById('u_result').innerText}`;
 
-    const material = document.getElementById('material').value;
-    const E = document.getElementById('E').value;
-    const epsilon0 = document.getElementById('epsilon0').value;
-    const mu = document.getElementById('mu').value;
-    const t = document.getElementById('t').value;
-    const L = document.getElementById('L').value;
-    const b = document.getElementById('b').value;
-    const alpha = document.getElementById('alpha').value;
-    const alpha_return = document.getElementById('alpha_return').value;
-
-    const inputData = `
-Input Parameters:
-Material: ${material}
-Flexural Modulus (E): ${E} MPa
-Allowable Strain (ε₀): ${epsilon0}
-Coefficient of Friction (μ): ${mu}
-Beam Thickness (t): ${t} mm
-Beam Length (L): ${L} mm
-Beam Width (b): ${b} mm
-Lead Angle (α): ${alpha} degrees
-Return Angle (α'): ${alpha_return} degrees
-
-Results:
-${deflection}
-${matingForce}
-    `;
-
-    const blob = new Blob([inputData], { type: 'text/plain' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = 'snapfit_results.txt';
-    link.click();
+  const blob = new Blob([results], { type: 'text/plain' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'snapfit_full_results.txt';
+  link.click();
 }
 </script>
-</script>
+
 </body>
 </html>
