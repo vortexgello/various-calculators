@@ -44,6 +44,8 @@
     <label>Return Angle (α', degrees): <input id="alpha_return" type="number"></label><br>
 
     <button onclick="calculate()">Calculate</button>
+    <button onclick="saveResults()">Save Results</button>
+    <button onclick="window.location.href='index.html'">Back to Home</button>
 
     <div class="output">
       <h3>Results</h3>
@@ -51,7 +53,7 @@
       <p id="mating_force"></p>
     </div>
     <img src="./flexture/page1.png" alt="Snap Fit Example Image">
-    <img src="./flexture/page1.png" alt="Snap Fit Example Image">
+    <img src="./flexture/page2.png" alt="Snap Fit Example Image">
   </div>
 
 <script>
@@ -98,5 +100,45 @@ function calculate() {
 }
 </script>
 
+<script>
+function saveResults() {
+    const deflection = document.getElementById('deflection').innerText;
+    const matingForce = document.getElementById('mating_force').innerText;
+
+    const material = document.getElementById('material').value;
+    const E = document.getElementById('E').value;
+    const epsilon0 = document.getElementById('epsilon0').value;
+    const mu = document.getElementById('mu').value;
+    const t = document.getElementById('t').value;
+    const L = document.getElementById('L').value;
+    const b = document.getElementById('b').value;
+    const alpha = document.getElementById('alpha').value;
+    const alpha_return = document.getElementById('alpha_return').value;
+
+    const inputData = `
+Input Parameters:
+Material: ${material}
+Flexural Modulus (E): ${E} MPa
+Allowable Strain (ε₀): ${epsilon0}
+Coefficient of Friction (μ): ${mu}
+Beam Thickness (t): ${t} mm
+Beam Length (L): ${L} mm
+Beam Width (b): ${b} mm
+Lead Angle (α): ${alpha} degrees
+Return Angle (α'): ${alpha_return} degrees
+
+Results:
+${deflection}
+${matingForce}
+    `;
+
+    const blob = new Blob([inputData], { type: 'text/plain' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'snapfit_results.txt';
+    link.click();
+}
+</script>
+</script>
 </body>
 </html>
